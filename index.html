@@ -137,6 +137,33 @@ html,body{
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
 
 #gameover-screen .final-score{font-size:28px;color:#00f0f0;font-weight:700;text-shadow:0 0 15px #00f0f0}
+
+.production-credit{
+  font-size:11px;
+  color:#888;
+  margin-top:30px;
+  letter-spacing:2px;
+  opacity:0.7;
+}
+.dad-msg{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  font-size:14px;
+  color:#f0a000;
+  text-shadow:0 0 10px #f0a000;
+  pointer-events:none;
+  animation:fadeOut 2s forwards;
+  z-index:99;
+  text-align:center;
+  font-weight:700;
+}
+@keyframes fadeOut{
+  0%{opacity:1;transform:translate(-50%, -50%) scale(1)}
+  70%{opacity:1;transform:translate(-50%, -60%) scale(1.1)}
+  100%{opacity:0;transform:translate(-50%, -70%) scale(0.9)}
+}
 </style>
 </head>
 <body>
@@ -171,6 +198,7 @@ html,body{
   <h1>NEONBLOX</h1>
   <p class="tap-prompt">TAP TO START</p>
   <p class="hs" id="start-hs"></p>
+  <p class="production-credit">AN OZAN SELCUK PRODUCTION</p>
 </div>
 <div class="overlay" id="pause-screen" style="display:none">
   <h1>PAUSED</h1>
@@ -466,6 +494,14 @@ function spawnComboText(linesCleared) {
   });
 }
 
+function showDadMessage(msg) {
+  const el = document.createElement('div');
+  el.className = 'dad-msg';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2000);
+}
+
 // ===== GAME STATE =====
 let CELL = 24;
 const gameCanvas = document.getElementById('game-canvas');
@@ -641,6 +677,8 @@ function checkLines() {
     if (fullRows.length === 4) {
       playSound('tetris');
       triggerShake(10, 300);
+      const msgs = ["Ozan is proud! 🎉", "TETRIS! Love, Ozan ❤️", "You're awesome! - Ozan", "That's my girl! 💪"];
+      showDadMessage(msgs[Math.floor(Math.random() * msgs.length)]);
     } else if (fullRows.length >= 2) {
       playSound('lineClear');
       triggerShake(5, 200);
@@ -651,6 +689,15 @@ function checkLines() {
 
     fullRows.forEach(row => spawnLineParticles(row));
     spawnComboText(fullRows.length);
+
+    // Score milestone messages
+    if (game.score >= 10000 && game.score < 10100) {
+      showDadMessage("10K! Ozan says keep going! 🚀");
+    } else if (game.score >= 20000 && game.score < 20100) {
+      showDadMessage("20K! You're crushing it! 💎");
+    } else if (game.score >= 50000 && game.score < 50100) {
+      showDadMessage("50K! Ozan is AMAZED! 🤯");
+    }
   } else {
     game.combo = 0;
     spawnPiece();
@@ -1105,6 +1152,10 @@ function startGame() {
   spawnPiece();
   updateHUD();
   updateBoardGlow();
+
+  // Welcome message
+  const welcomes = ["Good luck! ❤️ Ozan", "Have fun! - Ozan 😊", "You got this! - Ozan 💪", "Let's go! Love, Ozan 🎮"];
+  setTimeout(() => showDadMessage(welcomes[Math.floor(Math.random() * welcomes.length)]), 500);
 }
 
 // Overlay tap handlers
